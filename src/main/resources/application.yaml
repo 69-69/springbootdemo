@@ -52,7 +52,7 @@ assigndevelopers:
     # 10 MINUTES = 600000
     emailVerifyExpirationMs: 600000
     # Change to Remote host in Production
-    hostName: " https://truculent-experience-production.up.railway.app/api/v1/auth"
+    hostName: " https://springbootdemo-production-abe5.up.railway.app/api/v1/auth"
     # Random 256 bit 32 Byte Hex (HS256) Key
     jwtSecret: 8e435e4f2a530f331a64948e38cd4e063ddac96447c52011f611b4c8d853ea9e
 # Display SpringDoc Swagger-Ui OpenAPI endpoint
