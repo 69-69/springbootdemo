@@ -40,7 +40,7 @@ public class AccessTokenService {
     }
 
     // save new accessToken(JWT)
-    public JWTResponse saveAccessToken(User user, String refreshToken) {
+    public JWTResponse saveAccessToken(User user, String refreshToken, String refreshExpiry) {
         // revoke old tokens
         revokeOldAccessToken(user);
 
@@ -64,6 +64,7 @@ public class AccessTokenService {
                 .accessToken(accessToken)
                 // Return old RefreshToken
                 .refreshToken(refreshToken)
+                .refreshExpiration(refreshExpiry)
                 .accessExpiration(accessExpiration.toString())
                 .build();
     }

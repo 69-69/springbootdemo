@@ -39,10 +39,12 @@ public class AuthorizeUrlsSecurityConfig {
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
-                })
+                });
 
-                .csrf(AbstractHttpConfigurer::disable)
+        httpSecurity
+                .csrf(AbstractHttpConfigurer::disable);
 
+        httpSecurity
                 .authorizeHttpRequests(
                         (auth) ->
                                 auth
@@ -81,8 +83,9 @@ public class AuthorizeUrlsSecurityConfig {
                                         .requestMatchers(PUT,"/api/v1/libraries/**").hasAuthority(ADMIN_UPDATE.name())
                                         .anyRequest()
                                         .authenticated()
-                )
+                );
 
+        httpSecurity
                 .sessionManagement(
                         (session) ->
                                 session
@@ -93,12 +96,15 @@ public class AuthorizeUrlsSecurityConfig {
                                                         .maximumSessions(1)
                                                         .expiredUrl("/login?expired")
                                 )*/
-                )
+                );
 
-                .authenticationProvider(authenticationProvider)
+        httpSecurity
+                .authenticationProvider(authenticationProvider);
 
-                .addFilterBefore(jwtInterceptorAuthFilter, UsernamePasswordAuthenticationFilter.class)
+        httpSecurity
+                .addFilterBefore(jwtInterceptorAuthFilter, UsernamePasswordAuthenticationFilter.class);
 
+        httpSecurity
                 .logout(logoutConfigurer -> {
                     logoutConfigurer.addLogoutHandler(logoutHandler);
 
@@ -110,9 +116,10 @@ public class AuthorizeUrlsSecurityConfig {
                     logoutConfigurer.logoutSuccessHandler(
                             (request, response, authentication) -> SecurityContextHolder.clearContext()
                     );
-                })
+                });
 
                 // Deny Access to secured APIs Endpoints, if JWT Token expires
+        httpSecurity
                 .exceptionHandling(
                         exception ->
                                 exception

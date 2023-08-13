@@ -69,9 +69,7 @@ public class JWTInterceptorAuthFilter extends OncePerRequestFilter {
      */
     private void isUserAuthenticated(HttpServletRequest request, String jwtToken, String userName) {
         if (userName != null
-                && SecurityContextHolder
-                .getContext()
-                .getAuthentication() == null) {
+                && SecurityContextHolder.getContext().getAuthentication() == null) {
 
             // Check if Client/User exist in DB table
             UserDetails userDetails =

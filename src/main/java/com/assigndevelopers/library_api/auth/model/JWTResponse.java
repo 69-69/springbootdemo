@@ -19,6 +19,7 @@ public class JWTResponse {
     * REFRESH_TOKEN is used to get a new ACCESS_TOKEN
     * */
     private String accessToken;
-    private String refreshToken;
     private String accessExpiration;
+    private String refreshToken;
+    private String refreshExpiration;
 }

@@ -7,6 +7,7 @@ import com.assigndevelopers.library_api.emailConfirmation.service.EmailConfirmat
 import com.assigndevelopers.library_api.config.service.JWTService;
 import com.assigndevelopers.library_api.customException.EntityNotFoundException;
 import com.assigndevelopers.library_api.customException.GeneralException;
+import com.assigndevelopers.library_api.token.entity.RefreshToken;
 import com.assigndevelopers.library_api.token.service.RefreshTokenService;
 import com.assigndevelopers.library_api.token.service.AccessTokenService;
 import com.assigndevelopers.library_api.user.Role;
@@ -71,7 +72,8 @@ public class AuthenticationService {
     }
 
     /**
-     * Resend Confirm Registered/SignUp Email */
+     * Resend Confirm Registered/SignUp Email
+     */
     public void resendConfirmationMail(String userId) {
 
         var user = findUser(userId);
@@ -91,7 +93,7 @@ public class AuthenticationService {
 
     /**
      * Authenticate/SignIn API Client/User
-     * RETURN -> New AccessToken(JWT) & New RefreshToken
+     * RETURN -> Generate New AccessToken(JWT) & New RefreshToken
      */
     public JWTResponse authenticate(AuthenticateRequest authenticateRequest) {
         String username = authenticateRequest.getUsername();
@@ -112,10 +114,10 @@ public class AuthenticationService {
 
         // save new refreshToken
         // If JWT/ACCESS TOKEN expires, REFRESH_TOKEN is used to generate a new ACCESS_TOKEN
-        String refreshToken = refreshTokenService.saveRefreshToken(user);
+        RefreshToken rt = refreshTokenService.saveRefreshToken(user);
 
-        // Build & Send new accessToken(JWT) Response
-        return accessTokenService.saveAccessToken(user, refreshToken);
+        // Response
+        return accessTokenService.saveAccessToken(user, rt.getRefreshToken(), rt.getRefreshExpiration().toString());
     }
 
     /**
@@ -155,19 +157,21 @@ public class AuthenticationService {
             if (user.isEnabled() &&
                     jwtService.isTokenValid(refreshToken, user)) {
 
-                var authResponse = refreshTokenService.verifyRefreshToken(refreshToken)
-                        .map(
-                                // Generate new JWT/Access Token
-                                user1 -> accessTokenService.saveAccessToken(user1, refreshToken)
+                // Generate new JWT/Access Token
+                JWTResponse res = refreshTokenService.verifyRefreshToken(refreshToken)
+                        .flatMap(
+                                user1 -> refreshTokenService.findByRefreshToken(refreshToken)
+                                        .map(rk ->
+                                                accessTokenService.saveAccessToken(user1, rk.getRefreshToken(), rk.getRefreshExpiration().toString())
+                                        )
                         )
                         .orElseThrow(
                                 () -> new GeneralException(refreshToken, "Refresh token isn't associated to any account!")
                         );
 
-                // Build & Send Response
-                new ObjectMapper().writeValue(
-                        response.getOutputStream(), authResponse
-                );
+                // Response
+                new ObjectMapper()
+                        .writeValue(response.getOutputStream(), res);
             }
         }
 

@@ -36,7 +36,7 @@ public class RefreshTokenService {
         return token;
     }
 
-    public String saveRefreshToken(User user) {
+    public RefreshToken saveRefreshToken(User user) {
 
         // If user has unExpired RefreshToken, throw an exception
         Optional<RefreshToken> rk = refreshTokenRepository.findByUserId(user.getId());
@@ -57,10 +57,8 @@ public class RefreshTokenService {
         refreshToken.setRefreshExpiration(refreshExpiration);
         refreshToken.setRefreshToken(token);
 
-        refreshTokenRepository.save(refreshToken);
-
         // Return New RefreshToken
-        return token;
+        return refreshTokenRepository.save(refreshToken);
     }
 
     public Optional<User> verifyRefreshToken(String refreshToken) {
