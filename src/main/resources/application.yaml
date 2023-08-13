@@ -3,8 +3,9 @@ spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: root
-    url: jdbc:mysql://localhost:3306/library_api?useSSL=false&createDatabaseIfNotExist=true&createTableIfNotExist=true&allowPublicKeyRetrieval=true
+    password: AS0mIbmP7pu3cCMwBcsy
+    # mysql://root:AS0mIbmP7pu3cCMwBcsy@containers-us-west-162.railway.app:6726/railway
+    url: jdbc:mysql://containers-us-west-162.railway.app:6726/railway
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     # Log JPA queries
@@ -51,10 +52,10 @@ assigndevelopers:
     # 10 MINUTES = 600000
     emailVerifyExpirationMs: 600000
     # Change to Remote host in Production
-    hostName: " http://localhost:8080/api/v1/auth"
+    hostName: " https://containers-us-west-162.railway.app/api/v1/auth"
     # Random 256 bit 32 Byte Hex (HS256) Key
     jwtSecret: 8e435e4f2a530f331a64948e38cd4e063ddac96447c52011f611b4c8d853ea9e
 # Display SpringDoc Swagger-Ui OpenAPI endpoint
 springdoc:
-    # Display spring-boot-actuator endpoints in SpringDoc Swagger-Ui
+  # Display spring-boot-actuator endpoints in SpringDoc Swagger-Ui
   show-actuator: true
