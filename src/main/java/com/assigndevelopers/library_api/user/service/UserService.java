@@ -1,6 +1,7 @@
 package com.assigndevelopers.library_api.user.service;
 
 import com.assigndevelopers.library_api.customException.EntityNotFoundException;
+import com.assigndevelopers.library_api.user.Role;
 import com.assigndevelopers.library_api.user.entity.User;
 import com.assigndevelopers.library_api.user.repository.UserRepository;
 import com.assigndevelopers.library_api.util.Utils;
@@ -34,6 +35,39 @@ public class UserService {
                         () -> new EntityNotFoundException(User.class, Utils.isValidEmail(userId) ? "Email" : "Id ", userId)
                 );
     }
+
+    // Update Role
+    public void updateRole(Integer userId, String role){
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(
+                        ()->new EntityNotFoundException(User.class, "id", userId.toString())
+                );
+
+        user.setRole(Role.valueOf(role));
+        userRepository.save(user);
+    }
+
+    /* public void update(Integer id, User updateUser){
+
+        User u = userRepository.findById(id)
+                .orElseThrow(
+                        ()->new EntityNotFoundException(User.class, "id", id.toString())
+                );
+
+        if (!updateUser.getFirstName().isEmpty()
+                && !Objects.equals(u.getFirstName(), updateUser.getFirstName())) {
+            u.setFirstName(updateUser.getFirstName());
+        }
+        if (!updateUser.getLastName().isEmpty()
+                && !Objects.equals(u.getLastName(), updateUser.getLastName())) {
+            u.setLastName(updateUser.getLastName());
+        }
+
+        user.setId(u.get().getId());
+        user.setRole(Role.USER);
+        userRepository.save(user);
+    }*/
 
     /*
      * DELETE User by ID OR userEmail */

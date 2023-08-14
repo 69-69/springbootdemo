@@ -38,7 +38,7 @@ public class UserController {
     @GetMapping
     public ResponseEntity<Page<User>> getAll(
             @ParameterObject /*For the Purpose of SpringDoc OpenAPI Swagger-UI*/
-            Pageable pageable) {
+                    Pageable pageable) {
 
         return userService.getAll(pageable);
     }
@@ -49,6 +49,15 @@ public class UserController {
     public ResponseEntity<User> getByIdOrEmail(@PathVariable String userId) {
 
         return userService.getByIdOrEmail(userId);
+    }
+
+    @PutMapping("/{userId}/{userRole}")
+    public ResponseEntity<?> updateRole(
+            @PathVariable Integer userId, @PathVariable String userRole) {
+
+        userService.updateRole(userId, userRole);
+
+        return ResponseEntity.noContent().build();
     }
 
     /*
