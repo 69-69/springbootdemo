@@ -49,8 +49,9 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
+    @Column(columnDefinition="boolean default false", nullable = false)
     @Builder.Default
-    private Boolean enabled = true;
+    private Boolean enabled = false;
 
     @Column(name = "created_at")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "dd-MM-yyyy hh:mm:ss")
