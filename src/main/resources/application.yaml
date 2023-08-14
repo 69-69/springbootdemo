@@ -5,7 +5,7 @@ spring:
     username: root
     password: AS0mIbmP7pu3cCMwBcsy
     # mysql://root:AS0mIbmP7pu3cCMwBcsy@containers-us-west-162.railway.app:6726/railway
-    url: jdbc:mysql://containers-us-west-162.railway.app:6726/railwaycreateDatabaseIfNotExist=true&createTableIfNotExist=true&allowPublicKeyRetrieval=true
+    url: jdbc:mysql://containers-us-west-162.railway.app:6726/railway
   jpa:
     database-platform: org.hibernate.dialect.MySQL8Dialect
     # Log JPA queries

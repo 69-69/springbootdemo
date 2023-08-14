@@ -49,7 +49,7 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @Builder.Default
+    @Column(length = 50)
     private Boolean enabled = false;
 
     @Column(name = "created_at")
