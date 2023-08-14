@@ -73,12 +73,11 @@ public class User implements UserDetails {
     }
 
     /*
-     * For Security Purposes, user_ip(ipAddress)
-     * is used as the USERNAME to generate the
+     * Email is used as the USERNAME to generate the
      * Authorization (JWT-Token) for API Access*/
     @Override
     public String getUsername() {
-        return ipAddress;
+        return email;
     }
 
     @Override

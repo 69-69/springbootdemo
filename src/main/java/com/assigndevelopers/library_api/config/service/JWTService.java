@@ -100,7 +100,7 @@ public class JWTService {
 
     /**
      * @apiNote Generate New JWT-Token(Access Token) 'WITH ONLY userDetails'
-     * For Security Purposes, client_ip(ipAddress) is used as the USERNAME
+     * Email is used as the USERNAME
      * to generate the Authorization (JWT-Token) for API Access
      */
     public Map<String, Object> generateJWTToken(UserDetails userDetails) {
@@ -128,8 +128,7 @@ public class JWTService {
                 .builder()
                 .setClaims(extractClaims)
                 /*
-                 * For Security Purposes, client_ip(ipAddress)
-                 * is used as the USERNAME to generate the
+                 * Email is used as the USERNAME to generate the
                  * Authorization (JWT / Access Token) for API Access*/
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date(System.currentTimeMillis()))

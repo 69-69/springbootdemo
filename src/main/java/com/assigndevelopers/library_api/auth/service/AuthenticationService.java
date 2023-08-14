@@ -60,8 +60,8 @@ public class AuthenticationService {
                 .email(userEmail)
                 .ipAddress(registerRequest.getIpAddress())
                 .password(passwordEncoder.encode(registerRequest.getPassword()))
-                // By default, set Role to ROLE_USER, if not provided
-                .role(Role.ADMIN)
+                // By default, set Role to USER, if not provided
+                .role(Role.USER)
                 .createdAt(localDateTime)
                 .updatedAt(localDateTime)
                 .build();
