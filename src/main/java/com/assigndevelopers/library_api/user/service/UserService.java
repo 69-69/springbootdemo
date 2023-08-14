@@ -37,15 +37,18 @@ public class UserService {
     }
 
     // Update Role
-    public void updateRole(Integer userId, String role){
+    public void updateRole(Integer userId, String role) {
 
-        User user = userRepository.findById(userId)
+        userRepository.findById(userId)
+                .map(user -> {
+                    user.setRole(Role.valueOf(role));
+                    return userRepository.save(user);
+                })
                 .orElseThrow(
-                        ()->new EntityNotFoundException(User.class, "id", userId.toString())
+                        () -> new EntityNotFoundException(User.class, "id", userId.toString())
                 );
 
-        user.setRole(Role.valueOf(role));
-        userRepository.save(user);
+
     }
 
     /* public void update(Integer id, User updateUser){
