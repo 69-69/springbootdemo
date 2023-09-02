@@ -28,8 +28,8 @@ jobs:
           mvn -B package --file pom.xml
 
       - name: BUILD DOCKER IMAGE
-        uses: |
-          docker/build-push-action@v2
+        run: |
+          docker/build-push-action@v4
           echo "::set-env name=NOW::$(date +'%Y-%m-%dT%H:%M:%S')"
         with:
           context: .
@@ -44,8 +44,8 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: PUSH TO DOCKER HUB
-        uses: |
-          docker/build-push-action@v2
+        run: |
+          docker/build-push-action@v4
           echo "::set-env name=NOW::$(date +'%Y-%m-%dT%H:%M:%S')"
         with:
           context: .
