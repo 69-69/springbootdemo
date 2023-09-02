@@ -35,7 +35,7 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          dockerfile: ./Dockerfile
+          file: ./Dockerfile
           push: false
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-rest-api:${{ env.NOW }}
 
@@ -49,6 +49,6 @@ jobs:
         uses: docker/build-push-action@v4
         with:
           context: .
-          dockerfile: ./Dockerfile
+          file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-rest-api:${{ env.NOW }}
