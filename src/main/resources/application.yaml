@@ -19,7 +19,7 @@ spring:
     database: postgresql
     database-platform: org.hibernate.dialect.PostgreSQLDialect
 
-        # Spring Mail Config
+  # Spring Mail Config
   mail:
     host: smtp.gmail.com
     port: 587
