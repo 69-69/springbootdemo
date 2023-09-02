@@ -29,7 +29,7 @@ jobs:
 
       - name: BUILD DOCKER IMAGE
         uses: |
-          actions/build-push-action@v4 #v2
+          actions/build-push-action@v2
           echo "::set-env name=NOW::$(date +'%Y-%m-%dT%H:%M:%S')"
         with:
           context: .
@@ -45,7 +45,7 @@ jobs:
 
       - name: PUSH TO DOCKER HUB
         uses: |
-          action/build-push-action@v4 #v2
+          action/build-push-action@v2
           echo "::set-env name=NOW::$(date +'%Y-%m-%dT%H:%M:%S')"
         with:
           context: .
