@@ -1,25 +1,25 @@
 # MySQL connection properties
 spring:
+  sql:
+    init:
+      # SQL is written to be idempotent so this is safe
+      mode: always
   datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    username: root # root
-    password: AS0mIbmP7pu3cCMwBcsy # root
-    # mysql://root:AS0mIbmP7pu3cCMwBcsy@containers-us-west-162.railway.app:6726/railway
-    url: jdbc:mysql://containers-us-west-162.railway.app:6726/railway
-    # url: jdbc:mysql://localhost:3306/library_api?useSSL=false&createDatabaseIfNotExist=true&createTableIfNotExist=true&allowPublicKeyRetrieval=true
+    url: jdbc:postgresql://postgres-sql:5432/demo_db
+    username: admin
+    password: root
+    driver-class-name: org.postgresql.Driver
   jpa:
-    database-platform: org.hibernate.dialect.MySQL8Dialect
-    # Log JPA queries
-    # Comment this in production
+    hibernate:
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:
         format_sql: true
-        # Drop and create new tables (create, create-drop, validate, update)
-        # Only for testing purposes - comment this in production
-        hbm2ddl:
-          auto: update
-  # Spring Mail Config
+    database: postgresql
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+
+        # Spring Mail Config
   mail:
     host: smtp.gmail.com
     port: 587
@@ -36,14 +36,24 @@ spring:
           writeTimeout: 5000
 
 # Actuator HttpTrace Endpoint Setup
-# tracing all the requests that hit our services and collect this information to analyze it later.
 management:
   endpoints:
     web:
+      # Expose & monitor Client HTTP Calls in the SB-Admin Server
       exposure:
-        include: httptrace
+        # Expose & monitor All endpoints
+        include: "*" # httptrace
+  endpoint:
+    health:
+      show-components: always
+    shutdown:
+      enabled: true
+    refresh:
+      enabled: true
+    env:
+      enabled: true
 
-##### API PROPERTIES ######
+# API PROPERTIES
 assigndevelopers:
   app:
     # 1 DAY / 24 HOURS = 86400000
@@ -57,7 +67,25 @@ assigndevelopers:
     # hostName: " http://localhost:8080/api/v1/auth"
     # Random 256 bit 32 Byte Hex (HS256) Key
     jwtSecret: 8e435e4f2a530f331a64948e38cd4e063ddac96447c52011f611b4c8d853ea9e
+
+    # basic auth credentials
+    security:
+      usernameAdmin: admin@gmail.com
+      passwordAdmin: 12345
+
 # Display SpringDoc Swagger-Ui OpenAPI endpoint
 springdoc:
   # Display spring-boot-actuator endpoints in SpringDoc Swagger-Ui
   show-actuator: true
+  # Write logs into library-api-steve.log file
+
+logging:
+  file:
+    name: library-api-steve.log
+  pattern:
+    file: "%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){faint} %clr(%5p) %clr(${PID}){magenta} %clr(---){faint} %clr([%15.15t]){faint} %clr(%-40.40logger{39}){cyan} %clr(:){faint} %m%n%wEx"
+  logback:
+    rollingpolicy:
+      max-history: 20
+      max-file-size: 20MB
+

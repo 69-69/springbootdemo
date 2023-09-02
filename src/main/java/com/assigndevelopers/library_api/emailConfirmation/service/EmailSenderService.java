@@ -27,13 +27,31 @@ public class EmailSenderService {
         final SimpleMailMessage mailMessage = new SimpleMailMessage();
 
         mailMessage.setTo(userEmail);
-        mailMessage.setSubject("Mail Confirmation Link!");
-        mailMessage.setFrom("<MAIL>");
+        mailMessage.setSubject("[Assign API]: Mail Confirmation Link!");
+        mailMessage.setFrom("<MAIL>Assign API");
         mailMessage.setText(
-                "Thank you for registering. Link expires after 10 minutes." +
-                        "\n Please click on the below link to activate your account.\n "
-                        + hostName + "/register/confirm_email?token="
-                        + token);
+                "Thank you for registering. Link expires after 10 minutes.\n"
+                        + "Please click on the below link to activate your account.\n"
+                        + hostName + "/register/confirm_email?token=" + token
+        );
+
+        sendMessage(mailMessage);
+    }
+
+    public void accessTokenNotify(String userEmail) {
+        final SimpleMailMessage mailMessage = new SimpleMailMessage();
+        String user = userEmail.substring(0, userEmail.indexOf("@"));
+
+        mailMessage.setTo(userEmail);
+        mailMessage.setSubject("[Assign API]: Access Token Created");
+        mailMessage.setFrom("<MAIL>Assign API");
+        mailMessage.setText(
+                "Hello " + user + "\n\n"
+                        + "A new Access Token was just created now for your account " + user + "\n"
+                        + "If you didn't create this Access Token, please revoke it by creating a new one.\n\n"
+                        + "Thank You\n"
+                        + "The Assign Team"
+        );
 
         sendMessage(mailMessage);
     }

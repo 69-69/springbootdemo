@@ -2,11 +2,12 @@ package com.assigndevelopers.library_api.token.service;
 
 import com.assigndevelopers.library_api.auth.model.JWTResponse;
 import com.assigndevelopers.library_api.config.service.JWTService;
+import com.assigndevelopers.library_api.emailConfirmation.service.EmailSenderService;
 import com.assigndevelopers.library_api.token.TokenType;
 import com.assigndevelopers.library_api.token.entity.AccessToken;
 import com.assigndevelopers.library_api.token.repository.AccessTokenRepository;
 import com.assigndevelopers.library_api.user.entity.User;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -14,11 +15,18 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class AccessTokenService {
 
     private final JWTService jwtService;
+    private final EmailSenderService emailSenderService;
     private final AccessTokenRepository accessTokenRepository;
+
+    @Autowired
+    public AccessTokenService(JWTService jwtService, EmailSenderService emailSenderService, AccessTokenRepository accessTokenRepository) {
+        this.jwtService = jwtService;
+        this.emailSenderService = emailSenderService;
+        this.accessTokenRepository = accessTokenRepository;
+    }
 
     /**
      * @apiNote : Check if Token from Database is unexpired */
@@ -57,6 +65,7 @@ public class AccessTokenService {
                 .build();
 
         accessTokenRepository.save(token);
+        emailSenderService.accessTokenNotify(user.getEmail());
 
         //  Response
         return JWTResponse

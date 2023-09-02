@@ -5,20 +5,21 @@ import com.assigndevelopers.library_api.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import io.swagger.v3.oas.annotations.tags.Tags;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
+@CacheConfig(cacheNames = "users")
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/users")
 // For the Purpose of SpringDoc OpenAPI Swagger-UI
 @Tag(name = "Users Endpoint")
-@Tags
 public class UserController {
 
     private final UserService userService;
@@ -35,6 +36,7 @@ public class UserController {
             }
     )
 
+    @Cacheable("users")
     @GetMapping
     public ResponseEntity<Page<User>> getAll(
             @ParameterObject /*For the Purpose of SpringDoc OpenAPI Swagger-UI*/

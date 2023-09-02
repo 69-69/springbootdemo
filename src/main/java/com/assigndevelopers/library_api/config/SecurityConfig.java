@@ -19,12 +19,13 @@ import static com.assigndevelopers.library_api.user.Permission.*;
 import static com.assigndevelopers.library_api.user.Role.*;
 import static org.springframework.http.HttpMethod.*;
 
+/*
+* Interceptor: Intercept Incoming HTTP Client Request*/
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
-public class AuthorizeUrlsSecurityConfig {
-
-    private final JWTInterceptorAuthFilter jwtInterceptorAuthFilter;
+public class SecurityConfig {
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
     private final AuthenticationProvider authenticationProvider;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
     private final LogoutHandler logoutHandler;
@@ -49,12 +50,11 @@ public class AuthorizeUrlsSecurityConfig {
                         (auth) ->
                                 auth
                                         /* Unrestricted Endpoints: (Login, Signup) */
-                                               .requestMatchers(
+                                        .requestMatchers(
                                                 "/api/v1/auth/**",
-                                                // "/register/confirm_email/**",
+                                                 "/caches/**",
                                                 "/swagger-ui/**",
                                                 "/swagger-ui.html",
-                                                "/v2/api-docs",
                                                 "/v3/api-docs",
                                                 "/v3/api-docs/**",
                                                 "/swagger-resources",
@@ -63,24 +63,28 @@ public class AuthorizeUrlsSecurityConfig {
                                                 "/configuration/ui/**",
                                                 "/swagger-resources/security",
                                                 "/webjars/**"
+                                                // "/register/confirm_email/**",
                                         )
                                         .permitAll()
+
                                         /* Restricted Endpoints: (Library APIs) */
                                         // .requestMatchers("/api/v1/**").hasAnyAuthority("ROLE_ADMIN", "ROLE_USER", "ROLE_MANGER")
+
                                         // ROLE
                                         .requestMatchers("/api/v1/users/**").hasAnyRole(ADMIN.name(), MANAGER.name())
                                         // PERMISSION
-                                        .requestMatchers(GET,"/api/v1/users/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
-                                        .requestMatchers(POST,"/api/v1/users/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
-                                        .requestMatchers(DELETE,"/api/v1/users/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name())
-                                        .requestMatchers(PUT,"/api/v1/users/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
+                                        .requestMatchers(GET, "/api/v1/users/**").hasAnyAuthority(ADMIN_READ.name(), MANAGER_READ.name())
+                                        .requestMatchers(POST, "/api/v1/users/**").hasAnyAuthority(ADMIN_CREATE.name(), MANAGER_CREATE.name())
+                                        .requestMatchers(DELETE, "/api/v1/users/**").hasAnyAuthority(ADMIN_DELETE.name(), MANAGER_DELETE.name())
+                                        .requestMatchers(PUT, "/api/v1/users/**").hasAnyAuthority(ADMIN_UPDATE.name(), MANAGER_UPDATE.name())
+
                                         // ROLE
                                         .requestMatchers("/api/v1/libraries/**").hasRole(ADMIN.name())
                                         // PERMISSION
-                                        .requestMatchers(GET,"/api/v1/libraries/**").hasAuthority(ADMIN_READ.name())
-                                        .requestMatchers(POST,"/api/v1/libraries/**").hasAuthority(ADMIN_CREATE.name())
-                                        .requestMatchers(DELETE,"/api/v1/libraries/**").hasAuthority(ADMIN_DELETE.name())
-                                        .requestMatchers(PUT,"/api/v1/libraries/**").hasAuthority(ADMIN_UPDATE.name())
+                                        .requestMatchers(GET, "/api/v1/libraries/**").hasAuthority(ADMIN_READ.name())
+                                        .requestMatchers(POST, "/api/v1/libraries/**").hasAuthority(ADMIN_CREATE.name())
+                                        .requestMatchers(DELETE, "/api/v1/libraries/**").hasAuthority(ADMIN_DELETE.name())
+                                        .requestMatchers(PUT, "/api/v1/libraries/**").hasAuthority(ADMIN_UPDATE.name())
                                         .anyRequest()
                                         .authenticated()
                 );
@@ -102,13 +106,13 @@ public class AuthorizeUrlsSecurityConfig {
                 .authenticationProvider(authenticationProvider);
 
         httpSecurity
-                .addFilterBefore(jwtInterceptorAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         httpSecurity
                 .logout(logoutConfigurer -> {
                     logoutConfigurer.addLogoutHandler(logoutHandler);
 
-                    logoutConfigurer.logoutUrl("/api/v1/auth/logout");
+                    logoutConfigurer.logoutUrl("/api/v1/auth/logout").invalidateHttpSession(true);
 
                     logoutConfigurer.addLogoutHandler(logoutHandler);
 
@@ -118,7 +122,7 @@ public class AuthorizeUrlsSecurityConfig {
                     );
                 });
 
-                // Deny Access to secured APIs Endpoints, if JWT Token expires
+        // Deny Access to secured APIs Endpoints, if JWT Token expires
         httpSecurity
                 .exceptionHandling(
                         exception ->
@@ -129,5 +133,4 @@ public class AuthorizeUrlsSecurityConfig {
 
         return httpSecurity.build();
     }
-
 }

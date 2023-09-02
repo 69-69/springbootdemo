@@ -6,7 +6,7 @@ import com.assigndevelopers.library_api.token.TokenType;
 import com.assigndevelopers.library_api.token.entity.RefreshToken;
 import com.assigndevelopers.library_api.token.repository.RefreshTokenRepository;
 import com.assigndevelopers.library_api.user.entity.User;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -14,11 +14,16 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-@RequiredArgsConstructor
 public class RefreshTokenService {
 
     private final JWTService jwtService;
     private final RefreshTokenRepository refreshTokenRepository;
+
+    @Autowired
+    public RefreshTokenService(JWTService jwtService, RefreshTokenRepository refreshTokenRepository) {
+        this.jwtService = jwtService;
+        this.refreshTokenRepository = refreshTokenRepository;
+    }
 
     public Optional<RefreshToken> findByRefreshToken(String token) {
         return refreshTokenRepository.findByRefreshToken(token);

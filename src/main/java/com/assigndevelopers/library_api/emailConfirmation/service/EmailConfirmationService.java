@@ -6,7 +6,7 @@ import com.assigndevelopers.library_api.emailConfirmation.EmailConfirmation;
 import com.assigndevelopers.library_api.emailConfirmation.repository.EmailConfirmationRepository;
 import com.assigndevelopers.library_api.user.entity.User;
 import com.assigndevelopers.library_api.user.repository.UserRepository;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
@@ -14,12 +14,19 @@ import java.util.Map;
 import java.util.Optional;
 
 @Service
-@AllArgsConstructor
 public class EmailConfirmationService {
     private final JWTService jwtService;
     private final UserRepository userRepository;
     private final EmailSenderService emailSenderService;
     private final EmailConfirmationRepository emailConfirmationRepository;
+
+    @Autowired
+    public EmailConfirmationService(JWTService jwtService, UserRepository userRepository, EmailSenderService emailSenderService, EmailConfirmationRepository emailConfirmationRepository) {
+        this.jwtService = jwtService;
+        this.userRepository = userRepository;
+        this.emailSenderService = emailSenderService;
+        this.emailConfirmationRepository = emailConfirmationRepository;
+    }
 
     public void sendConfirmationMail(User user) {
 

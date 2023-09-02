@@ -17,7 +17,7 @@ import com.assigndevelopers.library_api.user.service.FindUserByEmailOrPhoneOrIpA
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -27,7 +27,6 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 
 @Service
-@RequiredArgsConstructor
 public class AuthenticationService {
 
     private final JWTService jwtService;
@@ -38,6 +37,18 @@ public class AuthenticationService {
     private final AuthenticationManager authenticationManager;
     private final EmailConfirmationService emailConfirmationService;
     private final FindUserByEmailOrPhoneOrIpAddress findUserByEmailOrPhoneOrIpAddress;
+
+    @Autowired
+    public AuthenticationService(JWTService jwtService, UserRepository userRepository, AccessTokenService accessTokenService, RefreshTokenService refreshTokenService, PasswordEncoder passwordEncoder, AuthenticationManager authenticationManager, EmailConfirmationService emailConfirmationService, FindUserByEmailOrPhoneOrIpAddress findUserByEmailOrPhoneOrIpAddress) {
+        this.jwtService = jwtService;
+        this.userRepository = userRepository;
+        this.accessTokenService = accessTokenService;
+        this.refreshTokenService = refreshTokenService;
+        this.passwordEncoder = passwordEncoder;
+        this.authenticationManager = authenticationManager;
+        this.emailConfirmationService = emailConfirmationService;
+        this.findUserByEmailOrPhoneOrIpAddress = findUserByEmailOrPhoneOrIpAddress;
+    }
 
 
     /**

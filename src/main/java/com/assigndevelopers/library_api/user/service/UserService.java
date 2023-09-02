@@ -5,18 +5,23 @@ import com.assigndevelopers.library_api.user.Role;
 import com.assigndevelopers.library_api.user.entity.User;
 import com.assigndevelopers.library_api.user.repository.UserRepository;
 import com.assigndevelopers.library_api.util.Utils;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 @Service
-@RequiredArgsConstructor
 public class UserService {
 
     private final UserRepository userRepository;
     private final FindUserByEmailOrPhoneOrIpAddress findUserByEmailOrPhoneOrIpAddress;
+
+    @Autowired
+    public UserService(UserRepository userRepository, FindUserByEmailOrPhoneOrIpAddress findUserByEmailOrPhoneOrIpAddress) {
+        this.userRepository = userRepository;
+        this.findUserByEmailOrPhoneOrIpAddress = findUserByEmailOrPhoneOrIpAddress;
+    }
 
     public ResponseEntity<Page<User>> getAll(Pageable pageable) {
         Page<User> userPageable = userRepository.findAll(pageable);
