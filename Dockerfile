@@ -1,4 +1,4 @@
-FROM openjdk:22-ea-slim
+FROM openjdk:17-jdk
 
 WORKDIR /dir
 
