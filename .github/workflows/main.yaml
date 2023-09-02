@@ -32,7 +32,7 @@ jobs:
           mvn -B package --file pom.xml
 
       - name: BUILD DOCKER IMAGE
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: .
           dockerfile: ./Dockerfile
@@ -40,13 +40,13 @@ jobs:
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-rest-api:${{ env.NOW }}
 
       - name: LOGIN TO DOCKER HUB
-        uses: docker/login-action@v1
+        uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: PUSH TO DOCKER HUB
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v4
         with:
           context: .
           dockerfile: ./Dockerfile
