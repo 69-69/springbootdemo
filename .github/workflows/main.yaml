@@ -34,6 +34,7 @@ jobs:
           context: .
           dockerfile: ./Dockerfile
           push: false
+          prefix-tag: v
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-REST-API:NOW::$(date +'%Y-%m-%dT%H:%M:%S') #${{ env.NOW }}
 
       - name: LOGIN TO DOCKER HUB
@@ -49,4 +50,5 @@ jobs:
           context: .
           dockerfile: ./Dockerfile
           push: true
+          prefix-tag: v
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-REST-API:NOW::$(date +'%Y-%m-%dT%H:%M:%S')
