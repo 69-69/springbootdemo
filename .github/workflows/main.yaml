@@ -28,13 +28,14 @@ jobs:
           mvn -B package --file pom.xml
 
       - name: BUILD DOCKER IMAGE
-        uses: docker/build-push-action@v4 #v2
-        # run: echo "::set-env name=NOW::$(date +'%Y-%m-%dT%H:%M:%S')"
+        uses: | #v2
+          docker/build-push-action@v4
+          echo "::set-env name=NOW::$(date +'%Y-%m-%dT%H:%M:%S')"
         with:
           context: .
           dockerfile: ./Dockerfile
           push: false
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-REST-API:$(date +'%Y-%m-%dT%H:%M:%S') #${{ env.NOW }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-REST-API:${{ env.NOW }}
 
       - name: LOGIN TO DOCKER HUB
         uses: docker/login-action@v2 #v1
@@ -43,10 +44,11 @@ jobs:
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
       - name: PUSH TO DOCKER HUB
-        uses: docker/build-push-action@v4 #v2
-        # run: echo "::set-env name=NOW::$(date +'%Y-%m-%dT%H:%M:%S')"
+        uses: | #v2
+          docker/build-push-action@v4
+          echo "::set-env name=NOW::$(date +'%Y-%m-%dT%H:%M:%S')"
         with:
           context: .
           dockerfile: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-REST-API:$(date +'%Y-%m-%dT%H:%M:%S')
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-REST-API:${{ env.NOW }}
