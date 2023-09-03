@@ -4,7 +4,7 @@
 # -> CMD to CREATE AWS REPO:
 # export AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>
 # export AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
-# aws ecr-public create-repository --region us-east-1 --repository-name spring-boot-rest-api
+# aws ecr create-repository --region us-east-1 --repository-name spring-boot-rest-api
 # <- End CMD to CREATE AWS REPO:
 
 name: BUILD AND DEPLOY SPRING BOOT APP
@@ -26,7 +26,7 @@ jobs:
         id: version
         run: echo "NOW=v$(date +'%Y.%m.%dT%H.%M.%S')" >> "$GITHUB_ENV"
 
-      - name: CHECKOUT CODE
+      - name: CHECKOUT CODE ✅
         uses: actions/checkout@v3
 
       - name: SETUP JDK 17 🎬
@@ -35,7 +35,7 @@ jobs:
           distribution: 'corretto'
           java-version: 17
 
-      - name: UNIT TESTS
+      - name: UNIT TESTS 🧪
         run: mvn -B test --file pom.xml
 
       - name: BUILD THE APPLICATION 🧱
@@ -73,16 +73,15 @@ jobs:
           aws-region: ${{ secrets.AWS_REGION }}
 
       - name: LOGIN TO AMAZON ECR 🪪
-        id: login-ecr-public
+        id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
         with:
           mask-password: 'true'
-          registry-type: public
 
-      - name: BUILD, TAG, AND PUSH IMAGE TO AMAZON ECR PUBLIC 🏷
+      - name: BUILD, TAG, AND PUSH IMAGE TO AMAZON ECR 🏷
         id: build-image
         env:
-          ECR_REGISTRY: ${{ steps.login-ecr-public.outputs.registry }}
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: spring-boot-rest-api
           IMAGE_TAG: ${{ env.NOW }}
         run: |
