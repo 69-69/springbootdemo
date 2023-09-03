@@ -1,5 +1,12 @@
 # GitHub Action-> Create a two chain Directories(.github & workflows)
 # and put this main.yaml file in it: .github -> workflows
+
+# -> CMD to CREATE AWS REPO:
+# export AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>
+# export AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
+# aws ecr create-repository --region us-east-1 --repository-name spring-boot-rest-api
+# <- End CMD to CREATE AWS REPO:
+
 name: BUILD AND DEPLOY SPRING BOOT APP
 
 on:
@@ -57,6 +64,34 @@ jobs:
           file: ./Dockerfile
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-rest-api:${{ env.NOW }}
+
+      - name: CONFIGURE AWS CREDENTIALS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: us-east-1 // region you want to push the image to
+
+      - name: LOGIN TO AMAZON ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      - name: BUILD, TAG, AND PUSH IMAGE TO AMAZON ECR 🏷
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: spring-boot-rest-api
+          IMAGE_TAG: ${{ env.NOW }}
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+
+        run: echo "name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+
+        # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+        # docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
       #- id: deploy
         #name: Deploy
