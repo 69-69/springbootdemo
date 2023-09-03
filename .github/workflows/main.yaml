@@ -22,14 +22,14 @@ jobs:
       #name: ${{ github.ref_name }}
       #url: ${{ steps.deploy.outputs.vm_url }}
     steps:
-      - name: SET ENV
+      - name: SET ENV 📀
         id: version
         run: echo "NOW=v$(date +'%Y.%m.%dT%H.%M.%S')" >> "$GITHUB_ENV"
 
       - name: CHECKOUT CODE
         uses: actions/checkout@v3
 
-      - name: SETUP JDK 17
+      - name: SETUP JDK 17 🎬
         uses: actions/setup-java@v3
         with:
           distribution: 'corretto'
@@ -38,7 +38,7 @@ jobs:
       - name: UNIT TESTS
         run: mvn -B test --file pom.xml
 
-      - name: BUILD THE APPLICATION
+      - name: BUILD THE APPLICATION 🧱
         run: |
           mvn clean
           mvn -B package --file pom.xml
@@ -51,13 +51,13 @@ jobs:
           #push: false
           #tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-rest-api:${{ env.NOW }}
 
-      - name: LOGIN TO DOCKER HUB
+      - name: LOGIN TO DOCKER HUB 🪪
         uses: docker/login-action@v2
         with:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: BUILD AND PUSH TO DOCKER HUB
+      - name: BUILD AND PUSH TO DOCKER HUB 🚢
         uses: docker/build-push-action@v4
         with:
           context: .
@@ -65,19 +65,18 @@ jobs:
           push: true
           tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-rest-api:${{ env.NOW }}
 
-      - name: CONFIGURE AWS CREDENTIALS
+      - name: CONFIGURE AWS CREDENTIALS 🖥️
         uses: aws-actions/configure-aws-credentials@v2
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ secrets.AWS_REGION }}
 
-      - name: LOGIN TO AMAZON ECR
+      - name: LOGIN TO AMAZON ECR 🪪
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
         with:
           mask-password: 'true'
-          registry-type: public
 
       - name: BUILD, TAG, AND PUSH IMAGE TO AMAZON ECR 🏷
         id: build-image
