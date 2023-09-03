@@ -75,6 +75,9 @@ jobs:
       - name: LOGIN TO AMAZON ECR
         id: login-ecr
         uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+          registry-type: public
 
       - name: BUILD, TAG, AND PUSH IMAGE TO AMAZON ECR 🏷
         id: build-image
