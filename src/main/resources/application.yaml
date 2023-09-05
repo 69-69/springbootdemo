@@ -5,9 +5,12 @@ spring:
       # SQL is written to be idempotent so this is safe
       mode: always
   datasource:
-    url: jdbc:postgresql://postgres-sql:5432/demo_db
-    username: admin
-    password: root
+    # AWS RDS PostgreSQL Connection
+    url: jdbc:postgresql://database-1.chvctnpsl8yc.us-east-1.rds.amazonaws.com:5432/demo_db
+    # Docker Container - PostgreSQL Connection
+    #url: jdbc:postgresql://postgres-sql:5432/demo_db
+    username: postgres
+    password: Winner=2021
     driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:

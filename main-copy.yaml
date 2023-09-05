@@ -1,0 +1,176 @@
+# GitHub Action-> Create a two chain Directories(.github & workflows)
+# and put this main.yaml file in it: .github -> workflows
+
+# -> CMD to CREATE AWS REPO:
+# export AWS_ACCESS_KEY_ID=<YOUR_ACCESS_KEY_ID>
+# export AWS_SECRET_ACCESS_KEY=<YOUR_SECRET_ACCESS_KEY>
+# aws ecr create-repository --region us-east-1 --repository-name spring-boot-rest-api
+# <- End CMD to CREATE AWS REPO:
+
+name: BUILD AND DEPLOY SPRING BOOT APP TO AWS & DOCKER HUB
+
+on:
+  push:
+    branches:
+      - main # On Which GitHub branch I want to execute .Yaml file
+
+jobs:
+  setup-build-publish-deploy:
+    if: github.repository == '69-69/springbootdemo'  # Make your deploy starts in our repo
+    name: Setup, Build, Publish, and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: CHECKOUT REPOSITORY
+        uses: actions/checkout@v2
+
+      # Setup JDK 1.8
+      - name: SET UP JDK 1.8
+        uses: actions/setup-java@v1
+        with:
+          java-version: 1.8
+          server-id: github
+          settings-path: ${{ github.workspace }}
+
+      # Build and Test with Gradle
+      - name: BUILD AND TEST WITH GRADE
+        run: gradle build -x test
+
+      #Configure AWS credentials
+      - name: CONFIGURE AWS CREDENTIALS
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws region: us-east-1
+
+      # Login to Amazon ECR
+      - name: LOGIN TO AMAZON ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@vi
+
+      # Build, tag, and push image to Amazon ECR
+      - name: BUILD, TAG, AND PUBLISH IMAGE TO AMAZON ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: enigma # ASW Repository name
+          IMAGE_TAG: develop
+        run: |
+               docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          # docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --build-arg APP_ENV=qa --build-arg POSTGRES_PASSWORD=$({ secrets.POSTGRES_PASSWORD_QA }} --build-arg
+               docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+               echo "name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+
+      # Push the new image ID in the Amazon ECS task definition
+      - name: PUSH THE NEW IMAGE ID IN THE AMAZON ECS TASK DEFINITION
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: enigma-container # ASW Container name
+          image: ${{ steps.build-image.outputs.image }}
+
+      # Deploy Amazon ECS task definition
+      - name: DEPLOY AMAZON ECS TASK DEFINITION
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: enigma-service # ASW Service name
+          cluster: enigma # ASW Cluster name
+          wait-for-service-stability: true
+
+
+
+  #jobs:
+  build-deploy:
+    if: github.repository == '69-69/springbootdemo'
+    name: BUILD AND DEPLOY SPRING BOOT REST API
+    runs-on: ubuntu-latest
+      #environment:
+      #name: ${{ github.ref_name }}
+    #url: ${{ steps.deploy.outputs.vm_url }}
+    steps:
+      - name: SET ENV 📀
+        id: version
+        run: echo "NOW=v$(date +'%Y.%m.%dT%H.%M.%S')" >> "$GITHUB_ENV"
+
+      - name: CHECKOUT CODE ✅
+        uses: actions/checkout@v3
+
+      - name: SETUP JDK 17 🎬
+        uses: actions/setup-java@v3
+        with:
+          distribution: 'corretto'
+          java-version: 17
+
+      - name: UNIT TESTS 🧪
+        run: mvn -B test --file pom.xml
+
+      - name: BUILD THE APPLICATION 🧱
+        run: |
+          mvn clean
+          mvn -B package --file pom.xml
+          
+        #- name: BUILD DOCKER IMAGE
+        #uses: docker/build-push-action@v4
+        #with:
+        #context: .
+        #file: ./Dockerfile
+        #push: false
+        #tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-rest-api:${{ env.NOW }}
+
+      - name: LOGIN TO DOCKER HUB 🪪
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_HUB_USERNAME }}
+          password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
+
+      - name: BUILD AND PUSH TO DOCKER HUB 🚢
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          file: ./Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-boot-rest-api:${{ env.NOW }}
+
+      # Configure AWS credentials
+      - name: CONFIGURE AWS CREDENTIALS 🖥️
+        uses: aws-actions/configure-aws-credentials@v2
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: LOGIN TO AMAZON ECR 🪪
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+        with:
+          mask-password: 'true'
+
+      - name: BUILD, TAG, AND PUSH IMAGE TO AMAZON ECR 🏷
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          ECR_REPOSITORY: spring-boot-rest-api
+          IMAGE_TAG: ${{ env.NOW }}
+        run: |
+          docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> "$GITHUB_OUTPUT"
+          
+        #- id: deploy
+        #name: Deploy
+        #uses: 69-69/github-actions-deploy-docker-to-ec2@v0.5.0
+        #with:
+        #aws_access_key_id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        #aws_secret_access_key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        #aws_session_token: ${{ secrets.AWS_SESSION_TOKEN }}
+        #aws_default_region: us-east-1
+        #domain_name: my-domain.com
+        #sub_domain: app
+        #tf_state_bucket: my-terraform-state-bucket
+        #dot_env: ${{ secrets.DOT_ENV }}
+        #ghv_env: ${{ vars.VARS }}
+        #app_port: 80
+        #additional_tags: "{\"key1\": \"value1\",\"key2\": \"value2\"}"
