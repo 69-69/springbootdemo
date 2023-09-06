@@ -14,8 +14,8 @@ services:
       - spring-boot-network
 
   app:
-    container_name: spring-app
-    image: springrest:v1.0.1
+    container_name: spring-rest-api
+    image: library-api:v1.0.1
     ports:
       - "8080:8080"
     networks:
