@@ -108,7 +108,7 @@ jobs:
           task-definition: ${{ steps.task-def.outputs.task-definition }}
           service: library-api-service # ASW Service name
           cluster: library-cluster # ASW Cluster name
-          wait-for-service-stability: true
+          # wait-for-service-stability: true
 
 # AdministratorAccess
 # AccessAnalyzerServiceRolePolicy
