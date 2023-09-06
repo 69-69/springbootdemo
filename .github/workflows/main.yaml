@@ -19,9 +19,7 @@ jobs:
     if: github.repository == '69-69/springbootdemo'
     name: BUILD AND DEPLOY SPRING BOOT REST API
     runs-on: ubuntu-latest
-    #environment:
-      #name: ${{ github.ref_name }}
-      #url: ${{ steps.deploy.outputs.vm_url }}
+
     steps:
       - name: SET ENV 📀
         id: version
@@ -41,7 +39,7 @@ jobs:
 
       - name: BUILD THE APPLICATION 🧱
         run: |
-          mvn clean
+          mvn clean install
           mvn -B package --file pom.xml
 
       #- name: BUILD DOCKER IMAGE
@@ -58,13 +56,13 @@ jobs:
           username: ${{ secrets.DOCKER_HUB_USERNAME }}
           password: ${{ secrets.DOCKER_HUB_ACCESS_TOKEN }}
 
-      - name: BUILD AND PUSH TO DOCKER HUB 🚢
+      - name: BUILD AND PUSH IMAGE TO DOCKER HUB 🚢
         uses: docker/build-push-action@v4
         with:
           context: .
           file: ./Dockerfile
           push: true
-          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/spring-library-api:develop #${{ env.NOW }}
+          tags: ${{ secrets.DOCKER_HUB_USERNAME }}/library-api:${{ env.NOW }}
 
       - name: CONFIGURE AWS CREDENTIALS 🖥️
         uses: aws-actions/configure-aws-credentials@v2
@@ -84,8 +82,8 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: spring-library-api # ASW Repository name
-          IMAGE_TAG: develop # ${{ env.NOW }}
+          ECR_REPOSITORY: library-api # ASW Repository name
+          IMAGE_TAG: ${{ env.NOW }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
