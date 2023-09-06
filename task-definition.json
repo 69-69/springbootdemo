@@ -60,9 +60,6 @@
   "placementConstraints": [],
   "memory": null,
   "taskRoleArn": "arn:aws:iam::365275828390:role/library-api-AWSECStaskExecutionRole",
-  "compatibilities": [
-    "EC2"
-  ],
   "family": "library-api-task",
   "pidMode": null,
   "requiresCompatibilities": [
