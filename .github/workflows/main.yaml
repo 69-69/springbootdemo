@@ -114,6 +114,8 @@ jobs:
 # AccessAnalyzerServiceRolePolicy
 # AmazonEC2ContainerRegistryFullAccess
 # IAMUserChangePassword
+# DescribeServices
+# DescribeTaskDefinition
 
       #- id: deploy
         #name: Deploy
