@@ -99,7 +99,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: library-api-container # ASW Container name
-          image: ${{ steps.build-image.outputs.image }}
+          image: ${{ steps.build-image.outputs.name }}
 
       # Deploy Amazon ECS task definition
       - name: DEPLOY AMAZON ECS TASK DEFINITION
